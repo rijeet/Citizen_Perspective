@@ -1,0 +1,47 @@
+{
+  "brandName": "জনদৃষ্টি",
+  "meta": {
+    "title": "জনদৃষ্টি — BD Measles Media Archive",
+    "description": "বাংলাদেশে হাম ও শিশু স্বাস্থ্য বিষয়ক যাচাইকৃত মিডিয়া আর্কাইভ · নাগরিক দৃষ্টিকোণ থেকে তথ্য।"
+  },
+  "nav": {
+    "archive": "আর্কাইভ",
+    "articles": "প্রবন্ধ",
+    "media": "মিডিয়া",
+    "timeline": "সময়রেখা",
+    "about": "সম্পর্কে",
+    "searchPlaceholder": "অনুসন্ধান…"
+  },
+  "home": {
+    "heroSubtitle": "BD Measles Media Archive",
+    "heroIntro": "বাংলাদেশে হামের প্রাদুর্ভাব ও শিশু স্বাস্থ্য ঘটনাবলী সম্পর্কিত যাচাইকৃত সংবাদ, ভিডিও ও সাক্ষাৎকারের কাঠামোবদ্ধ পাবলিক রেকর্ড।",
+    "heroSearchLabel": "গ্লোবাল অনুসন্ধান",
+    "filterNews": "সংবাদ",
+    "filterVideos": "ভিডিও",
+    "filterTimeline": "সময়রেখা",
+    "featured": "নির্বাচিত",
+    "latestGrid": "সাম্প্রতিক",
+    "articlesLead": "সকল প্রকাশিত নিবন্ধ।",
+    "timelinePreview": "সময়রেখা (প্রিভিউ)",
+    "noArticles": "কোনো প্রবন্ধ পাওয়া যায়নি। API চালু আছে কিনা যাচাই করুন।",
+    "source": "উৎস",
+    "read": "পড়ুন"
+  },
+  "article": {
+    "bySource": "উৎস",
+    "published": "প্রকাশ",
+    "tags": "ট্যাগ",
+    "related": "সম্পর্কিত",
+    "toc": "সূচিপত্র",
+    "verification": "উৎস যাচাই",
+    "notFound": "প্রবন্ধ পাওয়া যায়নি।"
+  },
+  "placeholders": {
+    "mediaTitle": "মিডিয়া লাইব্রেরি",
+    "mediaBody": "শীঘ্রই — ভিডিও ও চিত্র বিবরণ।",
+    "timelineTitle": "সময়রেখা",
+    "timelineBody": "শীঘ্রই — বছরভিত্তিক ঘটনা।",
+    "aboutTitle": "সম্পর্কে",
+    "aboutBody": "জনদৃষ্টি একটি দ্বিভাষিক নাগরিক আর্কাইভ। তথ্যের নিরপেক্ষতা ও উৎসের স্বচ্ছতা আমাদের মূল নীতি।"
+  }
+}

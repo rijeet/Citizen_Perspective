@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReviewStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum Locale {
+  bn
+  en
+}
+
+model Source {
+  id        String    @id @default(cuid())
+  name      String
+  url       String?
+  createdAt DateTime  @default(now())
+  articles  Article[]
+}
+
+model Article {
+  id           String               @id @default(cuid())
+  slug         String               @unique
+  publishedAt  DateTime?
+  coverUrl     String?
+  category     String?
+  sourceId     String
+  source       Source               @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  reviewStatus ReviewStatus         @default(PUBLISHED)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  translations ArticleTranslation[]
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([reviewStatus])
+}
+
+model ArticleTranslation {
+  id             String   @id @default(cuid())
+  articleId      String
+  article        Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  locale         Locale
+  title          String
+  description    String?
+  bodyMd         String   @db.Text
+  seoTitle       String?
+  seoDescription String?  @db.Text
+
+  @@unique([articleId, locale])
+  @@index([locale])
+}

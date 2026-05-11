@@ -1,0 +1,47 @@
+{
+  "brandName": "Citizen Perspective",
+  "meta": {
+    "title": "Citizen Perspective — BD Measles Media Archive",
+    "description": "Verified media archive on measles outbreaks and child health in Bangladesh — information from a civic point of view."
+  },
+  "nav": {
+    "archive": "Archive",
+    "articles": "Articles",
+    "media": "Media",
+    "timeline": "Timeline",
+    "about": "About",
+    "searchPlaceholder": "Search…"
+  },
+  "home": {
+    "heroSubtitle": "BD Measles Media Archive",
+    "heroIntro": "A structured public record of verified news, video, and interviews on measles outbreaks and child health incidents in Bangladesh.",
+    "heroSearchLabel": "Global search",
+    "filterNews": "News",
+    "filterVideos": "Videos",
+    "filterTimeline": "Timeline",
+    "featured": "Featured",
+    "latestGrid": "Latest",
+    "articlesLead": "All published entries.",
+    "timelinePreview": "Timeline preview",
+    "noArticles": "No articles found. Ensure the API is running and the database is seeded.",
+    "source": "Source",
+    "read": "Read"
+  },
+  "article": {
+    "bySource": "Source",
+    "published": "Published",
+    "tags": "Tags",
+    "related": "Related",
+    "toc": "Table of contents",
+    "verification": "Source verification",
+    "notFound": "Article not found."
+  },
+  "placeholders": {
+    "mediaTitle": "Media library",
+    "mediaBody": "Coming soon — video and image detail pages.",
+    "timelineTitle": "Timeline",
+    "timelineBody": "Coming soon — year-based events.",
+    "aboutTitle": "About",
+    "aboutBody": "Citizen Perspective is a bilingual civic archive. Our principles are neutral tone, mandatory attribution, and clarity over sensation."
+  }
+}

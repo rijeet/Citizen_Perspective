@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-bengali: var(--font-noto-bengali), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+
+  --color-archive-bg: #fafafa;
+  --color-archive-fg: #111111;
+  --color-archive-border: #e5e5e5;
+  --color-archive-accent: #2563eb;
+  --color-archive-muted: #6b7280;
+}
+
+.lang-bn {
+  font-family: var(--font-bengali);
+}
+
+.article-body {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.article-body h2 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.article-body h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.article-body ul {
+  margin: 1rem 0;
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+
+.article-body li {
+  margin: 0.35rem 0;
+}
+
+.article-body blockquote {
+  margin: 1.25rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--color-archive-border);
+  color: var(--color-archive-muted);
+}
+
+.article-body a {
+  color: var(--color-archive-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-body p {
+  margin: 0.75rem 0;
+}
+
+.article-body strong {
+  font-weight: 600;
+}
