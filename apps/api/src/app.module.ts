@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import * as path from 'path';
 import { ArticlesModule } from './articles/articles.module';
+import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 /** Compiled as `apps/api/dist/src/*.js` → package root `apps/api` */
@@ -24,6 +25,7 @@ const apiPackageDir = path.join(__dirname, '..', '..');
     }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     PrismaModule,
+    HealthModule,
     ArticlesModule,
   ],
   providers: [

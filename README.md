@@ -24,7 +24,7 @@ Create `apps/api/.env`:
 ```bash
 DATABASE_URL="postgresql://archive:archive@localhost:5432/jan_drishthi?schema=public"
 PORT=3001
-CORS_ORIGIN="http://localhost:3000"
+CORS_ORIGIN="http://localhost:3000,https://your-app.vercel.app"
 ```
 
 Migrate and seed:
