@@ -11,6 +11,7 @@
     "build": "npm run build --workspaces --if-present",
     "db:migrate": "npm run prisma:migrate -w api",
     "db:seed": "npm run prisma:seed -w api",
+    "db:seed:admin": "npm run prisma:seed:admin -w api",
     "db:deploy": "npm run prisma:deploy -w api"
   }
 }

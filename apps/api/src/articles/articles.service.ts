@@ -18,6 +18,7 @@ export type ArticleView = {
   publishedAt: string | null;
   coverUrl: string | null;
   category: string | null;
+  tags: string[];
   title: string;
   description: string | null;
   bodyMd?: string;
@@ -47,6 +48,7 @@ function toArticleView(
     publishedAt: Date | null;
     coverUrl: string | null;
     category: string | null;
+    tags: string[];
     source: { name: string; url: string | null };
     translations: TranslationRow[];
   },
@@ -64,6 +66,7 @@ function toArticleView(
     publishedAt: article.publishedAt?.toISOString() ?? null,
     coverUrl: article.coverUrl,
     category: article.category,
+    tags: article.tags ?? [],
     title: t.title,
     description: t.description,
     locale,
@@ -87,10 +90,27 @@ export class ArticlesService {
     data: ArticleView[];
     meta: { page: number; pageSize: number; total: number };
   }> {
-    const { locale, page, pageSize, q } = query;
+    const { locale, page, pageSize, q, category, tag } = query;
     const where: Prisma.ArticleWhereInput = {
       reviewStatus: 'PUBLISHED',
     };
+
+    const and: Prisma.ArticleWhereInput[] = [];
+    if (category?.trim()) {
+      and.push({ category: category.trim() });
+    }
+    if (tag?.trim()) {
+      const t = tag.trim();
+      and.push({
+        OR: [
+          { tags: { has: t } },
+          { category: { equals: t, mode: 'insensitive' } },
+        ],
+      });
+    }
+    if (and.length) {
+      where.AND = and;
+    }
 
     if (q?.trim()) {
       const term = q.trim();

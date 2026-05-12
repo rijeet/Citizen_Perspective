@@ -37,4 +37,21 @@ export class ArticleListQueryDto {
   @IsString()
   @MaxLength(200)
   q?: string;
+
+  @ApiPropertyOptional({
+    description: 'Exact match on Article.category (e.g. News, Report)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  category?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Tag: article tags array contains this value, or category equals (case-insensitive)',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  tag?: string;
 }

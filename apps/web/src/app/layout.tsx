@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="bn" className="h-full">
       <body
+        suppressHydrationWarning
         className={`${inter.variable} ${notoBengali.variable} flex min-h-full flex-col bg-archive-bg text-archive-fg antialiased`}
       >
         {children}

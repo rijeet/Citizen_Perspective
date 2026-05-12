@@ -3,7 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import * as path from 'path';
+import { AdminModule } from './admin/admin.module';
+import { ArchiveContentModule } from './archive-content/archive-content.module';
 import { ArticlesModule } from './articles/articles.module';
+import { BreakingNewsModule } from './breaking-news/breaking-news.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -27,6 +30,9 @@ const apiPackageDir = path.join(__dirname, '..', '..');
     PrismaModule,
     HealthModule,
     ArticlesModule,
+    ArchiveContentModule,
+    BreakingNewsModule,
+    AdminModule,
   ],
   providers: [
     {

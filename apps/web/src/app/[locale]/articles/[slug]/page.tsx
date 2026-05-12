@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
 import ArticleCard from '@/components/ArticleCard';
 import MarkdownBody from '@/components/MarkdownBody';
 import { getArticle, getArticles } from '@/lib/api';
@@ -78,11 +79,14 @@ export default async function ArticlePage({ params }: Props) {
           />
         ) : null}
         <header className="space-y-4 border-b border-archive-border pb-8">
-          {article.category && (
-            <span className="inline-flex rounded-full border border-archive-border px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-archive-muted">
+          {article.category ? (
+            <Link
+              href={`/tags/${encodeURIComponent(article.category)}`}
+              className="inline-flex rounded-full border border-archive-border px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-archive-muted transition-colors hover:border-archive-accent hover:text-archive-accent"
+            >
               {article.category}
-            </span>
-          )}
+            </Link>
+          ) : null}
           <h1 className="text-4xl font-semibold tracking-tight text-archive-fg">
             {article.title}
           </h1>
@@ -108,9 +112,32 @@ export default async function ArticlePage({ params }: Props) {
                 {formatPublishDate(article.publishedAt, locale)}
               </time>
             </span>
-            {article.category && (
-              <span>
-                {t('tags')}: {article.category}
+            {(article.tags?.length || article.category) && (
+              <span className="flex flex-wrap items-center gap-1.5">
+                <span className="shrink-0">{t('tags')}:</span>
+                {article.category ? (
+                  <Link
+                    href={`/tags/${encodeURIComponent(article.category)}`}
+                    className="rounded-full bg-archive-bg px-2 py-0.5 text-archive-fg ring-1 ring-archive-border hover:ring-archive-accent"
+                  >
+                    {article.category}
+                  </Link>
+                ) : null}
+                {(article.tags ?? [])
+                  .filter(
+                    (tg) =>
+                      !article.category ||
+                      tg.toLowerCase() !== article.category.toLowerCase(),
+                  )
+                  .map((tg) => (
+                    <Link
+                      key={tg}
+                      href={`/tags/${encodeURIComponent(tg)}`}
+                      className="rounded-full bg-archive-bg px-2 py-0.5 text-archive-fg ring-1 ring-archive-border hover:ring-archive-accent"
+                    >
+                      {tg}
+                    </Link>
+                  ))}
               </span>
             )}
           </div>

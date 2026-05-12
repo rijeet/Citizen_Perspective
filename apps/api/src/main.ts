@@ -31,6 +31,10 @@ async function bootstrap() {
     .setTitle('Citizen Perspective API')
     .setDescription('BD Measles Media Archive — bilingual read API')
     .setVersion('1.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'admin-jwt',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);

@@ -4,22 +4,34 @@ import { getArticles } from '@/lib/api';
 
 export default async function ArticlesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ category?: string }>;
 }) {
   const { locale } = await params;
+  const { category } = await searchParams;
+  const categoryTrim = category?.trim();
   const t = await getTranslations('home');
   const tNav = await getTranslations('nav');
-  const result = await getArticles(locale);
+  const result = await getArticles(
+    locale,
+    categoryTrim ? { category: categoryTrim } : undefined,
+  );
 
   const articles = result?.data ?? [];
+
+  const pageTitle =
+    categoryTrim === 'News'
+      ? tNav('news')
+      : categoryTrim
+        ? categoryTrim
+        : tNav('articles');
 
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {tNav('articles')}
-        </h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{pageTitle}</h1>
         <p className="text-archive-muted">{t('articlesLead')}</p>
       </header>
       {!articles.length ? (

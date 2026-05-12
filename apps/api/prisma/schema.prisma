@@ -17,12 +17,39 @@ enum Locale {
   en
 }
 
+enum EmbedPlatform {
+  YOUTUBE
+  FACEBOOK
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model BreakingNewsItem {
+  id        String   @id @default(cuid())
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  titleBn   String
+  titleEn   String
+  href      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
 model Source {
-  id        String    @id @default(cuid())
+  id        String          @id @default(cuid())
   name      String
   url       String?
-  createdAt DateTime  @default(now())
+  createdAt DateTime        @default(now())
   articles  Article[]
+  videos    ExternalVideo[]
 }
 
 model Article {
@@ -31,6 +58,7 @@ model Article {
   publishedAt  DateTime?
   coverUrl     String?
   category     String?
+  tags         String[]             @default([])
   sourceId     String
   source       Source               @relation(fields: [sourceId], references: [id], onDelete: Restrict)
   reviewStatus ReviewStatus         @default(PUBLISHED)
@@ -54,5 +82,85 @@ model ArticleTranslation {
   seoDescription String?  @db.Text
 
   @@unique([articleId, locale])
+  @@index([locale])
+}
+
+model ExternalVideo {
+  id           String                     @id @default(cuid())
+  platform     EmbedPlatform
+  watchUrl     String
+  publishedAt  DateTime?
+  reviewStatus ReviewStatus               @default(PUBLISHED)
+  sourceId     String?
+  source       Source?                    @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  tags         String[]                   @default([])
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+  translations ExternalVideoTranslation[]
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([reviewStatus])
+  @@index([sourceId])
+}
+
+model ExternalVideoTranslation {
+  id          String        @id @default(cuid())
+  videoId     String
+  video       ExternalVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  locale      Locale
+  title       String
+  description String?       @db.Text
+
+  @@unique([videoId, locale])
+  @@index([locale])
+}
+
+model MediaItem {
+  id           String                 @id @default(cuid())
+  mediaUrl     String
+  publishedAt  DateTime?
+  reviewStatus ReviewStatus           @default(PUBLISHED)
+  tags         String[]               @default([])
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  translations MediaItemTranslation[]
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([reviewStatus])
+}
+
+model MediaItemTranslation {
+  id          String    @id @default(cuid())
+  mediaItemId String
+  mediaItem   MediaItem @relation(fields: [mediaItemId], references: [id], onDelete: Cascade)
+  locale      Locale
+  title       String
+  caption     String?   @db.Text
+
+  @@unique([mediaItemId, locale])
+  @@index([locale])
+}
+
+model TimelineEvent {
+  id           String                    @id @default(cuid())
+  eventAt      DateTime
+  reviewStatus ReviewStatus              @default(PUBLISHED)
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  translations TimelineEventTranslation[]
+
+  @@index([eventAt])
+  @@index([reviewStatus])
+}
+
+model TimelineEventTranslation {
+  id       String         @id @default(cuid())
+  eventId  String
+  event    TimelineEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  locale   Locale
+  title    String
+  bodyMd   String         @db.Text
+
+  @@unique([eventId, locale])
   @@index([locale])
 }

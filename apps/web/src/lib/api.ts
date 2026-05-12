@@ -9,6 +9,7 @@ export type ArticleView = {
   publishedAt: string | null;
   coverUrl: string | null;
   category: string | null;
+  tags: string[];
   title: string;
   description: string | null;
   bodyMd?: string;
@@ -45,14 +46,24 @@ async function safeFetch<T>(
   }
 }
 
-export function getArticles(locale: string, q?: string): Promise<ArticleListResponse | null> {
+export function getArticles(
+  locale: string,
+  opts?: { q?: string; category?: string; tag?: string; pageSize?: number },
+): Promise<ArticleListResponse | null> {
+  const pageSize = Math.min(Math.max(opts?.pageSize ?? 24, 1), 48);
   const params = new URLSearchParams({
     locale,
     page: '1',
-    pageSize: '24',
+    pageSize: String(pageSize),
   });
-  if (q?.trim()) {
-    params.set('q', q.trim());
+  if (opts?.q?.trim()) {
+    params.set('q', opts.q.trim());
+  }
+  if (opts?.category?.trim()) {
+    params.set('category', opts.category.trim());
+  }
+  if (opts?.tag?.trim()) {
+    params.set('tag', opts.tag.trim());
   }
   const url = `${baseUrl}/articles?${params.toString()}`;
   return safeFetch<ArticleListResponse>(url);
@@ -65,4 +76,84 @@ export function getArticle(
   const params = new URLSearchParams({ locale });
   const url = `${baseUrl}/articles/${encodeURIComponent(slug)}?${params.toString()}`;
   return safeFetch<ArticleView>(url);
+}
+
+export type ExternalVideoView = {
+  id: string;
+  platform: 'YOUTUBE' | 'FACEBOOK';
+  watchUrl: string;
+  publishedAt: string | null;
+  title: string;
+  description: string | null;
+  locale: string;
+  source: { name: string; url: string | null } | null;
+  tags: string[];
+};
+
+export type MediaItemView = {
+  id: string;
+  mediaUrl: string;
+  publishedAt: string | null;
+  title: string;
+  caption: string | null;
+  locale: string;
+  tags: string[];
+};
+
+export type TimelineEventView = {
+  id: string;
+  eventAt: string;
+  title: string;
+  bodyMd: string;
+  locale: string;
+};
+
+export function getVideos(
+  locale: string,
+  opts?: { tag?: string },
+): Promise<ExternalVideoView[] | null> {
+  const params = new URLSearchParams({ locale });
+  if (opts?.tag?.trim()) {
+    params.set('tag', opts.tag.trim());
+  }
+  return safeFetch<ExternalVideoView[]>(
+    `${baseUrl}/videos?${params.toString()}`,
+  );
+}
+
+export function getMediaItems(
+  locale: string,
+  opts?: { tag?: string },
+): Promise<MediaItemView[] | null> {
+  const params = new URLSearchParams({ locale });
+  if (opts?.tag?.trim()) {
+    params.set('tag', opts.tag.trim());
+  }
+  return safeFetch<MediaItemView[]>(
+    `${baseUrl}/media-items?${params.toString()}`,
+  );
+}
+
+export function getTimelineEvents(
+  locale: string,
+): Promise<TimelineEventView[] | null> {
+  const params = new URLSearchParams({ locale });
+  return safeFetch<TimelineEventView[]>(
+    `${baseUrl}/timeline-events?${params.toString()}`,
+  );
+}
+
+export type BreakingNewsTickerItem = {
+  id: string;
+  title: string;
+  href: string | null;
+};
+
+export function getBreakingNews(
+  locale: string,
+): Promise<BreakingNewsTickerItem[] | null> {
+  const params = new URLSearchParams({ locale });
+  return safeFetch<BreakingNewsTickerItem[]>(
+    `${baseUrl}/breaking-news?${params.toString()}`,
+  );
 }

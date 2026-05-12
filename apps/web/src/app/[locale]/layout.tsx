@@ -3,6 +3,8 @@ import type { Locale } from 'next-intl';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import BreakingNewsMarquee from '@/components/BreakingNewsMarquee';
+import PublicOnlyChrome from '@/components/PublicOnlyChrome';
 import SiteHeader from '@/components/SiteHeader';
 import { routing } from '@/i18n/routing';
 
@@ -51,7 +53,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className={locale === 'bn' ? 'lang-bn' : ''} lang={locale}>
-        <SiteHeader />
+        <div className="sticky top-0 z-40">
+          <PublicOnlyChrome>
+            <BreakingNewsMarquee locale={locale} />
+          </PublicOnlyChrome>
+          <SiteHeader />
+        </div>
         <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-1 flex-col px-5 pb-24 pt-8">
           {children}
         </div>

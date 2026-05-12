@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Article" ADD COLUMN "tags" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+
+-- AlterTable
+ALTER TABLE "MediaItem" ADD COLUMN "tags" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

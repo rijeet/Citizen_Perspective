@@ -11,7 +11,7 @@ export default function SiteHeader() {
   const brand = root('brandName');
 
   return (
-    <header className="sticky top-0 z-40 border-b border-archive-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <header className="border-b border-archive-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-5">
         <div className="flex min-w-0 items-center gap-6">
           <Link
@@ -27,6 +27,15 @@ export default function SiteHeader() {
             <Link href="/articles" className="hover:text-archive-fg">
               {t('articles')}
             </Link>
+            <Link
+              href="/articles?category=News"
+              className="hover:text-archive-fg"
+            >
+              {t('news')}
+            </Link>
+            <Link href="/media" className="hover:text-archive-fg">
+              {t('videos')}
+            </Link>
             <Link href="/media" className="hover:text-archive-fg">
               {t('media')}
             </Link>
@@ -35,6 +44,9 @@ export default function SiteHeader() {
             </Link>
             <Link href="/about" className="hover:text-archive-fg">
               {t('about')}
+            </Link>
+            <Link href="/admin" className="hover:text-archive-fg">
+              {t('admin')}
             </Link>
           </nav>
         </div>

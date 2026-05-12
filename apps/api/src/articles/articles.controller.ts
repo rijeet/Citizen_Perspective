@@ -4,7 +4,8 @@ import { ArticleDetailQueryDto } from './dto/article-detail-query.dto';
 import { ArticleListQueryDto } from './dto/article-list-query.dto';
 import { ArticlesService } from './articles.service';
 
-@ApiTags('articles')@Controller('articles')
+@ApiTags('articles')
+@Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 

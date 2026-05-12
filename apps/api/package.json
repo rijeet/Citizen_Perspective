@@ -16,6 +16,8 @@
     "prisma:migrate": "dotenv -e ../../.env -e .env -- prisma migrate dev",
     "prisma:deploy": "dotenv -e ../../.env -e .env -- prisma migrate deploy",
     "prisma:seed": "dotenv -e ../../.env -e .env -- prisma db seed",
+    "prisma:seed:breaking": "dotenv -e ../../.env -e .env -- ts-node --project prisma/tsconfig.seed.json prisma/seed-breaking-news.ts",
+    "prisma:seed:admin": "dotenv -e ../../.env -e .env -- ts-node --project prisma/tsconfig.seed.json prisma/seed-admin.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -28,13 +30,18 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.2",
     "@nestjs/throttler": "^6.5.0",
     "@prisma/client": "5.22.0",
+    "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "dotenv": "^17.4.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "prisma": "5.22.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
@@ -45,9 +52,11 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
+    "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
@@ -66,7 +75,7 @@
     "typescript-eslint": "^8.20.0"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --project prisma/tsconfig.seed.json prisma/seed.ts"
   },
   "jest": {
     "moduleFileExtensions": [
