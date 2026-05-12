@@ -1,0 +1,8 @@
+# Local SQLite when DATABASE_URL uses file: (dev only)
+*.db
+*.db-journal
+
+# If someone copies env next to schema — root .env is canonical
+.env
+.env.local
+.env.*.local
