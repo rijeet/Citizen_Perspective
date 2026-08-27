@@ -22,6 +22,30 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </p>
         <nav className="flex flex-col gap-2 text-sm">
           <Link
+            href="/admin/categories"
+            className="rounded-md px-2 py-1.5 text-archive-fg hover:bg-archive-bg"
+          >
+            {t('navCategories')}
+          </Link>
+          <Link
+            href="/admin/incidents"
+            className="rounded-md px-2 py-1.5 text-archive-fg hover:bg-archive-bg"
+          >
+            {t('navIncidents')}
+          </Link>
+          <Link
+            href="/admin/investigations"
+            className="rounded-md px-2 py-1.5 text-archive-fg hover:bg-archive-bg"
+          >
+            {t('navInvestigations')}
+          </Link>
+          <Link
+            href="/admin/featured-banners"
+            className="rounded-md px-2 py-1.5 text-archive-fg hover:bg-archive-bg"
+          >
+            {t('navFeaturedBanners')}
+          </Link>
+          <Link
             href="/admin/articles/new?category=News"
             className="rounded-md px-2 py-1.5 text-archive-fg hover:bg-archive-bg"
           >

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Locale, Prisma } from '@prisma/client';
+import { ArticleContentType, Locale, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ArticleListQueryDto, RequestLocale } from './dto/article-list-query.dto';
 
@@ -7,7 +7,8 @@ type TranslationRow = {
   locale: Locale;
   title: string;
   description: string | null;
-  bodyMd: string;
+  bodyMd: string | null;
+  bodyHtml: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
 };
@@ -18,10 +19,12 @@ export type ArticleView = {
   publishedAt: string | null;
   coverUrl: string | null;
   category: string | null;
+  contentType: ArticleContentType;
   tags: string[];
   title: string;
   description: string | null;
-  bodyMd?: string;
+  bodyMd?: string | null;
+  bodyHtml?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   locale: RequestLocale;
@@ -48,6 +51,7 @@ function toArticleView(
     publishedAt: Date | null;
     coverUrl: string | null;
     category: string | null;
+    contentType: ArticleContentType;
     tags: string[];
     source: { name: string; url: string | null };
     translations: TranslationRow[];
@@ -66,6 +70,7 @@ function toArticleView(
     publishedAt: article.publishedAt?.toISOString() ?? null,
     coverUrl: article.coverUrl,
     category: article.category,
+    contentType: article.contentType,
     tags: article.tags ?? [],
     title: t.title,
     description: t.description,
@@ -77,6 +82,7 @@ function toArticleView(
 
   if (includeBody) {
     base.bodyMd = t.bodyMd;
+    base.bodyHtml = t.bodyHtml;
   }
 
   return base;

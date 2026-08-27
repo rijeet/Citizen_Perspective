@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import ArticleCard from '@/components/ArticleCard';
 import MarkdownBody from '@/components/MarkdownBody';
+import HtmlBody from '@/components/HtmlBody';
 import { getArticle, getArticles } from '@/lib/api';
 import { formatPublishDate } from '@/lib/format-date';
 import { slugifyHeading } from '@/lib/slug-heading';
@@ -58,11 +59,19 @@ export default async function ArticlePage({ params }: Props) {
   const tHome = await getTranslations('home');
 
   const article = await getArticle(slug, locale);
-  if (!article || !article.bodyMd) {
+  const hasBody =
+    article &&
+    (article.contentType === 'HTML'
+      ? Boolean(article.bodyHtml)
+      : Boolean(article.bodyMd));
+  if (!article || !hasBody) {
     notFound();
   }
 
-  const toc = headingsFromMarkdown(article.bodyMd);
+  const toc =
+    article.contentType === 'HTML' || !article.bodyMd
+      ? []
+      : headingsFromMarkdown(article.bodyMd);
   const list = await getArticles(locale);
   const related =
     list?.data?.filter((a) => a.slug !== article.slug).slice(0, 4) ?? [];
@@ -143,7 +152,11 @@ export default async function ArticlePage({ params }: Props) {
           </div>
         </header>
         <div className="mt-8 max-w-[720px]">
-          <MarkdownBody markdown={article.bodyMd} />
+          {article.contentType === 'HTML' && article.bodyHtml ? (
+            <HtmlBody html={article.bodyHtml} />
+          ) : article.bodyMd ? (
+            <MarkdownBody markdown={article.bodyMd} />
+          ) : null}
         </div>
       </article>
       <aside className="space-y-10 lg:col-span-4">

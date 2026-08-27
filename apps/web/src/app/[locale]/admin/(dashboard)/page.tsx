@@ -1,12 +1,10 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useRouter } from '@/i18n/navigation';
-import { useEffect } from 'react';
+type Props = {
+  params: Promise<{ locale: string }>;
+};
 
-export default function AdminDashboardIndex() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace('/admin/articles');
-  }, [router]);
-  return null;
+export default async function AdminDashboardIndex({ params }: Props) {
+  const { locale } = await params;
+  redirect(`/${locale}/admin/articles`);
 }

@@ -7,7 +7,12 @@ import { AdminModule } from './admin/admin.module';
 import { ArchiveContentModule } from './archive-content/archive-content.module';
 import { ArticlesModule } from './articles/articles.module';
 import { BreakingNewsModule } from './breaking-news/breaking-news.module';
+import { CategoriesModule } from './categories/categories.module';
+import { FeaturedBannersModule } from './featured-banners/featured-banners.module';
+import { GovInvestigationsModule } from './gov-investigations/gov-investigations.module';
 import { HealthModule } from './health/health.module';
+import { IncidentsModule } from './incidents/incidents.module';
+import { MetadataModule } from './metadata/metadata.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 /** Compiled as `apps/api/dist/src/*.js` → package root `apps/api` */
@@ -32,6 +37,11 @@ const apiPackageDir = path.join(__dirname, '..', '..');
     ArticlesModule,
     ArchiveContentModule,
     BreakingNewsModule,
+    CategoriesModule,
+    IncidentsModule,
+    GovInvestigationsModule,
+    FeaturedBannersModule,
+    MetadataModule,
     AdminModule,
   ],
   providers: [

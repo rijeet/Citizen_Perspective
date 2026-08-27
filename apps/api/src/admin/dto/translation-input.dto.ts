@@ -16,10 +16,15 @@ export class TranslationInputDto {
   @IsString()
   description?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  @MinLength(1)
-  bodyMd: string;
+  bodyMd?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  bodyHtml?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

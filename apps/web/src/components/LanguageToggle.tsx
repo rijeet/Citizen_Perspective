@@ -17,7 +17,7 @@ export default function LanguageToggle() {
       {(['bn', 'en'] as const).map((code) => (
         <Link
           key={code}
-          href={pathname}
+          href={pathname || '/'}
           locale={code}
           role="tab"
           aria-selected={locale === code}

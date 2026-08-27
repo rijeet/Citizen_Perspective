@@ -24,6 +24,12 @@ export default function SiteHeader() {
             <Link href="/" className="hover:text-archive-fg">
               {t('archive')}
             </Link>
+            <Link href="/incidents" className="hover:text-archive-fg">
+              {t('incidents')}
+            </Link>
+            <Link href="/investigations" className="hover:text-archive-fg">
+              {t('investigations')}
+            </Link>
             <Link href="/articles" className="hover:text-archive-fg">
               {t('articles')}
             </Link>
@@ -45,7 +51,7 @@ export default function SiteHeader() {
             <Link href="/about" className="hover:text-archive-fg">
               {t('about')}
             </Link>
-            <Link href="/admin" className="hover:text-archive-fg">
+            <Link href="/admin/articles" className="hover:text-archive-fg">
               {t('admin')}
             </Link>
           </nav>

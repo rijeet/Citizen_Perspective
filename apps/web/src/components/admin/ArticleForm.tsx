@@ -12,6 +12,7 @@ type Trans = {
   title: string;
   description: string;
   bodyMd: string;
+  bodyHtml: string;
   seoTitle: string;
   seoDescription: string;
 };
@@ -22,6 +23,7 @@ function emptyTrans(locale: 'bn' | 'en'): Trans {
     title: '',
     description: '',
     bodyMd: '',
+    bodyHtml: '',
     seoTitle: '',
     seoDescription: '',
   };
@@ -51,6 +53,7 @@ export default function ArticleForm({
   const [reviewStatus, setReviewStatus] = useState<'DRAFT' | 'PUBLISHED'>(
     'PUBLISHED',
   );
+  const [contentType, setContentType] = useState<'MARKDOWN' | 'HTML'>('MARKDOWN');
   const [translations, setTranslations] = useState<Trans[]>([
     emptyTrans('bn'),
     emptyTrans('en'),
@@ -108,11 +111,13 @@ export default function ArticleForm({
         coverUrl: string | null;
         publishedAt: string | null;
         reviewStatus: string;
+        contentType?: 'MARKDOWN' | 'HTML';
         translations: {
           locale: string;
           title: string;
           description: string | null;
-          bodyMd: string;
+          bodyMd: string | null;
+          bodyHtml: string | null;
           seoTitle: string | null;
           seoDescription: string | null;
         }[];
@@ -120,6 +125,7 @@ export default function ArticleForm({
       setSlug(a.slug);
       setSourceId(a.sourceId);
       setCategory(a.category ?? '');
+      setContentType(a.contentType === 'HTML' ? 'HTML' : 'MARKDOWN');
       setTagsInput(a.tags?.length ? a.tags.join(', ') : '');
       setCoverUrl(a.coverUrl ?? '');
       setPublishedAt(
@@ -135,6 +141,7 @@ export default function ArticleForm({
           title: '',
           description: '',
           bodyMd: '',
+          bodyHtml: '',
           seoTitle: '',
           seoDescription: '',
         } as const);
@@ -145,6 +152,7 @@ export default function ArticleForm({
           title: '',
           description: '',
           bodyMd: '',
+          bodyHtml: '',
           seoTitle: '',
           seoDescription: '',
         } as const);
@@ -153,7 +161,8 @@ export default function ArticleForm({
           locale: 'bn',
           title: bn.title,
           description: bn.description ?? '',
-          bodyMd: bn.bodyMd,
+          bodyMd: bn.bodyMd ?? '',
+          bodyHtml: bn.bodyHtml ?? '',
           seoTitle: bn.seoTitle ?? '',
           seoDescription: bn.seoDescription ?? '',
         },
@@ -161,7 +170,8 @@ export default function ArticleForm({
           locale: 'en',
           title: en.title,
           description: en.description ?? '',
-          bodyMd: en.bodyMd,
+          bodyMd: en.bodyMd ?? '',
+          bodyHtml: en.bodyHtml ?? '',
           seoTitle: en.seoTitle ?? '',
           seoDescription: en.seoDescription ?? '',
         },
@@ -181,7 +191,8 @@ export default function ArticleForm({
       locale: tr.locale,
       title: tr.title,
       description: tr.description || undefined,
-      bodyMd: tr.bodyMd,
+      bodyMd: contentType === 'MARKDOWN' ? tr.bodyMd : undefined,
+      bodyHtml: contentType === 'HTML' ? tr.bodyHtml : undefined,
       seoTitle: tr.seoTitle || undefined,
       seoDescription: tr.seoDescription || undefined,
     }));
@@ -202,6 +213,7 @@ export default function ArticleForm({
             ? new Date(publishedAt).toISOString()
             : undefined,
           reviewStatus,
+          contentType,
           translations: translationsPayload,
           tags,
         }),
@@ -219,6 +231,7 @@ export default function ArticleForm({
               ? new Date(publishedAt).toISOString()
               : null,
             reviewStatus,
+            contentType,
             translations: translationsPayload,
             tags,
           }),
@@ -237,7 +250,17 @@ export default function ArticleForm({
     return <p className="text-sm text-archive-muted">{t('loading')}</p>;
   }
 
-  const row = (loc: 'bn' | 'en', labels: { title: string; desc: string; body: string; st: string; sd: string }) => {
+  const row = (
+    loc: 'bn' | 'en',
+    labels: {
+      title: string;
+      desc: string;
+      body: string;
+      bodyHtml: string;
+      st: string;
+      sd: string;
+    },
+  ) => {
     const tr = translations.find((x) => x.locale === loc)!;
     return (
       <fieldset
@@ -264,15 +287,27 @@ export default function ArticleForm({
             onChange={(e) => setTrans(loc, 'description', e.target.value)}
           />
         </label>
-        <label className="block text-sm">
-          <span className="text-archive-muted">{labels.body}</span>
-          <textarea
-            className="mt-1 min-h-[160px] w-full rounded-md border border-archive-border bg-white px-3 py-2 font-mono text-sm"
-            value={tr.bodyMd}
-            onChange={(e) => setTrans(loc, 'bodyMd', e.target.value)}
-            required
-          />
-        </label>
+        {contentType === 'MARKDOWN' ? (
+          <label className="block text-sm">
+            <span className="text-archive-muted">{labels.body}</span>
+            <textarea
+              className="mt-1 min-h-[160px] w-full rounded-md border border-archive-border bg-white px-3 py-2 font-mono text-sm"
+              value={tr.bodyMd}
+              onChange={(e) => setTrans(loc, 'bodyMd', e.target.value)}
+              required
+            />
+          </label>
+        ) : (
+          <label className="block text-sm">
+            <span className="text-archive-muted">{labels.bodyHtml}</span>
+            <textarea
+              className="mt-1 min-h-[200px] w-full rounded-md border border-archive-border bg-white px-3 py-2 font-mono text-sm"
+              value={tr.bodyHtml}
+              onChange={(e) => setTrans(loc, 'bodyHtml', e.target.value)}
+              required
+            />
+          </label>
+        )}
         <label className="block text-sm">
           <span className="text-archive-muted">{labels.st}</span>
           <input
@@ -348,6 +383,22 @@ export default function ArticleForm({
             <option value="DRAFT">{t('draft')}</option>
           </select>
         </label>
+        <label className="block text-sm sm:col-span-2">
+          <span className="text-archive-muted">{t('contentType')}</span>
+          <select
+            className="mt-1 w-full rounded-md border border-archive-border bg-white px-3 py-2"
+            value={contentType}
+            onChange={(e) =>
+              setContentType(e.target.value as 'MARKDOWN' | 'HTML')
+            }
+          >
+            <option value="MARKDOWN">{t('contentMarkdown')}</option>
+            <option value="HTML">{t('contentHtml')}</option>
+          </select>
+          {contentType === 'HTML' ? (
+            <p className="mt-1 text-xs text-archive-muted">{t('htmlEditorHint')}</p>
+          ) : null}
+        </label>
         <label className="block text-sm">
           <span className="text-archive-muted">{t('publishedAt')}</span>
           <input
@@ -379,6 +430,7 @@ export default function ArticleForm({
         title: t('titleBn'),
         desc: t('descBn'),
         body: t('bodyBn'),
+        bodyHtml: t('bodyHtmlBn'),
         st: t('seoTitleBn'),
         sd: t('seoDescBn'),
       })}
@@ -386,6 +438,7 @@ export default function ArticleForm({
         title: t('titleEn'),
         desc: t('descEn'),
         body: t('bodyEn'),
+        bodyHtml: t('bodyHtmlEn'),
         st: t('seoTitleEn'),
         sd: t('seoDescEn'),
       })}

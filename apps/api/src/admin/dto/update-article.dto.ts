@@ -51,6 +51,11 @@ export class UpdateArticleDto {
   @IsIn(['DRAFT', 'PUBLISHED'])
   reviewStatus?: 'DRAFT' | 'PUBLISHED';
 
+  @ApiPropertyOptional({ enum: ['MARKDOWN', 'HTML'] })
+  @IsOptional()
+  @IsIn(['MARKDOWN', 'HTML'])
+  contentType?: 'MARKDOWN' | 'HTML';
+
   @ApiPropertyOptional({ type: [TranslationInputDto] })
   @IsOptional()
   @IsArray()

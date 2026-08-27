@@ -1,10 +1,5 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { Locale, ReviewStatus } from '@prisma/client';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ArticleContentType, Locale, ReviewStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import type { AdminArticleListQueryDto } from './dto/admin-article-list-query.dto';
 import type { CreateArticleDto } from './dto/create-article.dto';
@@ -68,6 +63,7 @@ export class AdminArticlesService {
         publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : null,
         coverUrl: dto.coverUrl ?? null,
         category: dto.category ?? null,
+        contentType: (dto.contentType ?? 'MARKDOWN') as ArticleContentType,
         tags: (dto.tags ?? [])
           .map((x) => x.trim())
           .filter((x) => x.length > 0),
@@ -77,7 +73,8 @@ export class AdminArticlesService {
             locale: t.locale as Locale,
             title: t.title,
             description: t.description ?? null,
-            bodyMd: t.bodyMd,
+            bodyMd: t.bodyMd ?? null,
+            bodyHtml: t.bodyHtml ?? null,
             seoTitle: t.seoTitle ?? null,
             seoDescription: t.seoDescription ?? null,
           })),
@@ -136,6 +133,9 @@ export class AdminArticlesService {
           ...(dto.reviewStatus !== undefined && {
             reviewStatus: dto.reviewStatus as ReviewStatus,
           }),
+          ...(dto.contentType !== undefined && {
+            contentType: dto.contentType as ArticleContentType,
+          }),
         },
       });
 
@@ -153,14 +153,16 @@ export class AdminArticlesService {
               locale: t.locale as Locale,
               title: t.title,
               description: t.description ?? null,
-              bodyMd: t.bodyMd,
+              bodyMd: t.bodyMd ?? null,
+              bodyHtml: t.bodyHtml ?? null,
               seoTitle: t.seoTitle ?? null,
               seoDescription: t.seoDescription ?? null,
             },
             update: {
               title: t.title,
               description: t.description ?? null,
-              bodyMd: t.bodyMd,
+              bodyMd: t.bodyMd ?? null,
+              bodyHtml: t.bodyHtml ?? null,
               seoTitle: t.seoTitle ?? null,
               seoDescription: t.seoDescription ?? null,
             },

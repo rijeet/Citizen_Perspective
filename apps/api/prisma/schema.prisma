@@ -22,6 +22,35 @@ enum EmbedPlatform {
   FACEBOOK
 }
 
+enum NewsSourceType {
+  YOUTUBE
+  ARTICLE
+  FACEBOOK
+}
+
+enum GovInvestigationStage {
+  INCIDENT_OCCURRED
+  INVESTIGATION_PROMISED
+  COMMITTEE_FORMED
+  INVESTIGATION_ONGOING
+  REPORT_SUBMITTED
+  ACTION_TAKEN
+  CLOSED_NO_ACTION
+  CLOSED_RESOLVED
+}
+
+enum GovInvestigationStatus {
+  ON_TRACK
+  DELAYED
+  STALLED
+  RESOLVED
+}
+
+enum ArticleContentType {
+  MARKDOWN
+  HTML
+}
+
 model Admin {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -58,6 +87,7 @@ model Article {
   publishedAt  DateTime?
   coverUrl     String?
   category     String?
+  contentType  ArticleContentType   @default(MARKDOWN)
   tags         String[]             @default([])
   sourceId     String
   source       Source               @relation(fields: [sourceId], references: [id], onDelete: Restrict)
@@ -77,12 +107,169 @@ model ArticleTranslation {
   locale         Locale
   title          String
   description    String?
-  bodyMd         String   @db.Text
+  bodyMd         String?  @db.Text
+  bodyHtml       String?  @db.Text
   seoTitle       String?
   seoDescription String?  @db.Text
 
   @@unique([articleId, locale])
   @@index([locale])
+}
+
+model Category {
+  id            String                 @id @default(cuid())
+  slug          String                 @unique
+  sortOrder     Int                    @default(0)
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  translations  CategoryTranslation[]
+  subcategories Subcategory[]
+  incidents     Incident[]
+
+  @@index([sortOrder])
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  locale     Locale
+  name       String
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+}
+
+model Subcategory {
+  id           String                    @id @default(cuid())
+  categoryId   String
+  category     Category                  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  slug         String
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  translations SubcategoryTranslation[]
+  incidents    Incident[]
+
+  @@unique([categoryId, slug])
+}
+
+model SubcategoryTranslation {
+  id            String      @id @default(cuid())
+  subcategoryId String
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+  locale        Locale
+  name          String
+
+  @@unique([subcategoryId, locale])
+  @@index([locale])
+}
+
+model Incident {
+  id              String                    @id @default(cuid())
+  slug            String                    @unique
+  categoryId      String
+  category        Category                  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategoryId   String?
+  subcategory     Subcategory?              @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  currentStage    String                    @default("")
+  currentStatus   String?
+  reviewStatus    ReviewStatus              @default(PUBLISHED)
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  translations    IncidentTranslation[]
+  newsItems       NewsItem[]
+  investigations  GovernmentInvestigation[]
+
+  @@index([updatedAt(sort: Desc)])
+  @@index([reviewStatus])
+  @@index([categoryId])
+}
+
+model IncidentTranslation {
+  id         String   @id @default(cuid())
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  locale     Locale
+  title      String
+
+  @@unique([incidentId, locale])
+  @@index([locale])
+}
+
+model NewsItem {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  incidentId   String
+  incident     Incident       @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  sourceUrl    String
+  sourceType   NewsSourceType
+  headlineBn   String
+  headlineEn   String
+  descriptionBn            String?            @db.Text
+  descriptionEn            String?            @db.Text
+  descriptionContentType   ArticleContentType @default(MARKDOWN)
+  thumbnailUrl String?
+  publishedAt  DateTime?
+  stage        String
+  status       String?
+  createdAt    DateTime       @default(now())
+
+  @@index([incidentId, createdAt])
+}
+
+model GovernmentInvestigation {
+  id            String                          @id @default(cuid())
+  incidentId    String?
+  incident      Incident?                       @relation(fields: [incidentId], references: [id], onDelete: SetNull)
+  currentStage  GovInvestigationStage           @default(INCIDENT_OCCURRED)
+  currentStatus GovInvestigationStatus          @default(ON_TRACK)
+  reviewStatus  ReviewStatus                    @default(PUBLISHED)
+  createdAt     DateTime                        @default(now())
+  updatedAt     DateTime                        @updatedAt
+  translations  GovInvestigationTranslation[]
+  updates       GovernmentInvestigationUpdate[]
+
+  @@index([updatedAt(sort: Desc)])
+  @@index([reviewStatus])
+}
+
+model GovInvestigationTranslation {
+  id              String                  @id @default(cuid())
+  investigationId String
+  investigation   GovernmentInvestigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  locale          Locale
+  title           String
+
+  @@unique([investigationId, locale])
+  @@index([locale])
+}
+
+model GovernmentInvestigationUpdate {
+  id              String                  @id @default(cuid())
+  investigationId String
+  investigation   GovernmentInvestigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  sourceUrl       String
+  sourceType      NewsSourceType
+  headlineBn      String
+  headlineEn      String
+  thumbnailUrl    String?
+  publishedAt     DateTime?
+  stage           GovInvestigationStage
+  status          GovInvestigationStatus
+  createdAt       DateTime                @default(now())
+
+  @@index([investigationId, createdAt])
+}
+
+model FeaturedBanner {
+  id          String   @id @default(cuid())
+  imageUrl    String
+  captionBn   String
+  captionEn   String
+  sectionType String
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
 }
 
 model ExternalVideo {

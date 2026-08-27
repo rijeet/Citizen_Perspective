@@ -47,19 +47,19 @@ After you edit `schema.prisma` locally, create the next migration (dev only; Pos
 npm run db:migrate
 ```
 
-**Demo seed** (wipes articles/sources, then re-inserts sample data):
+**Seed** (wipes all content — articles, incidents, categories, etc. — then upserts admin from env):
 
 ```bash
 npm run db:seed
 ```
 
-**Admin only (no demo data reset):** if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set in `apps/api/.env` or the repo root `.env`, run:
+**Admin only** (no wipe; updates password from env):
 
 ```bash
 npm run db:seed:admin
 ```
 
-This upserts that admin (updates the password hash on every run). Full `db:seed` still clears and re-creates demo articles/sources and optionally upserts the same admin when those env vars are set.
+Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the repo root `.env` (or `apps/api/.env`).
 
 Run API:
 
