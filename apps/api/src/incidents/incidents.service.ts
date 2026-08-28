@@ -1,5 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ArticleContentType, NewsSourceType, Prisma, ReviewStatus } from '@prisma/client';
+import {
+  buildNewsItemSlug,
+  normalizeSlugKey,
+  slugifyText,
+} from '../common/slug.util';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   pickLocaleName,
@@ -161,6 +166,10 @@ export class IncidentsService {
       });
     }
 
+    if (!item) {
+      item = await this.findNewsItemBySlugAlias(newsSlug, incidentFilter);
+    }
+
     if (!item) throw new NotFoundException('News item not found');
 
     const incident = item.incident;
@@ -179,6 +188,45 @@ export class IncidentsService {
         currentStatus: incident.currentStatus,
       },
     };
+  }
+
+  private async findNewsItemBySlugAlias(
+    newsSlug: string,
+    incidentFilter: { slug: string; reviewStatus: ReviewStatus },
+  ) {
+    const requested = normalizeSlugKey(newsSlug);
+    const candidates = await this.prisma.newsItem.findMany({
+      where: { incident: incidentFilter },
+      include: {
+        incident: {
+          include: {
+            translations: true,
+            category: { include: { translations: true } },
+          },
+        },
+      },
+    });
+
+    return (
+      candidates.find((row) => {
+        const keys = new Set<string>([
+          normalizeSlugKey(row.slug),
+          normalizeSlugKey(buildNewsItemSlug(row.headlineEn, row.headlineBn)),
+          normalizeSlugKey(slugifyText(row.headlineEn)),
+          normalizeSlugKey(slugifyText(row.headlineBn)),
+          normalizeSlugKey(
+            row.headlineEn
+              .trim()
+              .toLowerCase()
+              .replace(/\s*[:|]\s*/g, '--')
+              .replace(/\s+/g, '-')
+              .replace(/[^\p{L}\p{M}\p{N}-]/gu, '')
+              .replace(/-+/g, '-'),
+          ),
+        ]);
+        return keys.has(requested);
+      }) ?? null
+    );
   }
 
   private toListView(

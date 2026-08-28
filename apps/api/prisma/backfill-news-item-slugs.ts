@@ -1,20 +1,21 @@
 import { PrismaClient } from '@prisma/client';
-import { uniqueNewsItemSlug, slugifyText } from '../src/common/slug.util';
+import { buildNewsItemSlug } from '../src/common/slug.util';
 
 const prisma = new PrismaClient();
 
 async function main() {
   const items = await prisma.newsItem.findMany({
     orderBy: { createdAt: 'asc' },
-    select: { id: true, slug: true, headlineEn: true },
+    select: { id: true, slug: true, headlineEn: true, headlineBn: true },
   });
 
   const used = new Set<string>();
 
   for (const item of items) {
-    const desired = slugifyText(item.headlineEn);
+    const desired = buildNewsItemSlug(item.headlineEn, item.headlineBn);
     const needsUpdate =
-      item.slug.startsWith('update-') || item.slug !== desired;
+      item.slug.startsWith('update-') ||
+      item.slug !== desired;
 
     if (!needsUpdate) {
       used.add(item.slug);
@@ -36,7 +37,7 @@ async function main() {
     console.log(`${item.slug} -> ${slug}`);
   }
 
-  console.log(`Updated ${items.length} news item slug(s) checked.`);
+  console.log(`Checked ${items.length} news item slug(s).`);
 }
 
 main()

@@ -183,6 +183,7 @@ export class AdminIncidentsService {
           return Boolean(existing);
         },
         dto.headlineEn,
+        dto.headlineBn,
       );
 
       const newsItem = await tx.newsItem.create({

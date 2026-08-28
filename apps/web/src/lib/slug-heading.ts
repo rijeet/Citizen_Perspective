@@ -4,7 +4,9 @@ export function slugifyHeading(text: string): string {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, '-')
-    .replace(/[^\p{L}\p{N}-]/gu, '');
+    .replace(/[^\p{L}\p{M}\p{N}-]/gu, '')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
   if (!s) s = 'section';
   return s;
