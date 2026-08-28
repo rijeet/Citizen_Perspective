@@ -10,6 +10,7 @@ import { BreakingNewsModule } from './breaking-news/breaking-news.module';
 import { CategoriesModule } from './categories/categories.module';
 import { FeaturedBannersModule } from './featured-banners/featured-banners.module';
 import { GovInvestigationsModule } from './gov-investigations/gov-investigations.module';
+import { GovernanceModule } from './governance/governance.module';
 import { HealthModule } from './health/health.module';
 import { IncidentsModule } from './incidents/incidents.module';
 import { MetadataModule } from './metadata/metadata.module';
@@ -40,6 +41,7 @@ const apiPackageDir = path.join(__dirname, '..', '..');
     CategoriesModule,
     IncidentsModule,
     GovInvestigationsModule,
+    GovernanceModule,
     FeaturedBannersModule,
     MetadataModule,
     AdminModule,

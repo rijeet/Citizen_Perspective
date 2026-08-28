@@ -162,7 +162,7 @@ The browser loads articles from `NEXT_PUBLIC_API_URL` (see [`apps/web/src/lib/ap
 | Name | Value / notes |
 |------|----------------|
 | `DATABASE_URL` | Your Neon (or other Postgres) connection string |
-| `CORS_ORIGIN` | `https://citizen-perspective.vercel.app` — add `http://localhost:3000` comma-separated for local dev |
+| `CORS_ORIGIN` | Comma-separated browser origins — include `https://bdvote2026.vercel.app` for external tracker consumers (see `governance-tracker-api.md`) |
 | `JWT_SECRET` | Strong random string (required for admin login in production) |
 | `ADMIN_BOOTSTRAP_SECRET` | Strong random string (only for first `POST /admin/auth/bootstrap`) |
 | `JWT_EXPIRES_SEC` | Optional (default `604800`) |
