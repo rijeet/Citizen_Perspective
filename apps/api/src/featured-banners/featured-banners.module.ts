@@ -8,6 +8,7 @@ import { FeaturedBannersController } from './featured-banners.controller';
 
 @Module({
   controllers: [FeaturedBannersController, AdminFeaturedBannersController],
+  providers: [FeaturedBannersService, AdminFeaturedBannersService],
   exports: [FeaturedBannersService, AdminFeaturedBannersService],
 })
 export class FeaturedBannersModule {}

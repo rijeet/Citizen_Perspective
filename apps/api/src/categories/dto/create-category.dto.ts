@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -11,6 +12,7 @@ import {
 
 class CategoryTranslationInput {
   @ApiProperty({ enum: ['bn', 'en'] })
+  @IsIn(['bn', 'en'])
   locale: 'bn' | 'en';
 
   @ApiProperty()
