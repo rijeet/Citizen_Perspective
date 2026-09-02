@@ -3,6 +3,7 @@ import { ArticleContentType, NewsSourceType, Prisma, ReviewStatus } from '@prism
 import {
   buildNewsItemSlug,
   normalizeSlugKey,
+  slugKeysMatch,
   slugifyText,
 } from '../common/slug.util';
 import { PrismaService } from '../prisma/prisma.service';
@@ -209,7 +210,7 @@ export class IncidentsService {
 
     return (
       candidates.find((row) => {
-        const keys = new Set<string>([
+        const keys = [
           normalizeSlugKey(row.slug),
           normalizeSlugKey(buildNewsItemSlug(row.headlineEn, row.headlineBn)),
           normalizeSlugKey(slugifyText(row.headlineEn)),
@@ -223,8 +224,9 @@ export class IncidentsService {
               .replace(/[^\p{L}\p{M}\p{N}-]/gu, '')
               .replace(/-+/g, '-'),
           ),
-        ]);
-        return keys.has(requested);
+        ];
+        if (keys.some((key) => key === requested)) return true;
+        return slugKeysMatch(newsSlug, row.slug);
       }) ?? null
     );
   }

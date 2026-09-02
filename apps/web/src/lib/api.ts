@@ -1,3 +1,5 @@
+import { decodeSlugSegment } from './slug-match';
+
 export type ArticleListResponse = {
   data: ArticleView[];
   meta: { page: number; pageSize: number; total: number };
@@ -26,6 +28,16 @@ export type ArticleView = {
 
 const baseUrl =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
+
+function apiUrl(path: string, query?: Record<string, string>): string {
+  const url = new URL(path.replace(/^\//, ''), `${baseUrl.replace(/\/$/, '')}/`);
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      url.searchParams.set(key, value);
+    }
+  }
+  return url.toString();
+}
 
 async function safeFetch<T>(
   url: string,
@@ -255,9 +267,8 @@ export function getIncident(
   slug: string,
   locale: string,
 ): Promise<IncidentDetailView | null> {
-  const params = new URLSearchParams({ locale });
   return safeFetch<IncidentDetailView>(
-    `${baseUrl}/incidents/${encodeURIComponent(slug)}?${params.toString()}`,
+    apiUrl(`/incidents/${decodeSlugSegment(slug)}`, { locale }),
   );
 }
 
@@ -266,9 +277,11 @@ export function getNewsItem(
   newsSlug: string,
   locale: string,
 ): Promise<NewsItemDetailView | null> {
-  const params = new URLSearchParams({ locale });
   return safeFetch<NewsItemDetailView>(
-    `${baseUrl}/incidents/${encodeURIComponent(incidentSlug)}/updates/${encodeURIComponent(newsSlug)}?${params.toString()}`,
+    apiUrl(
+      `/incidents/${decodeSlugSegment(incidentSlug)}/updates/${decodeSlugSegment(newsSlug)}`,
+      { locale },
+    ),
   );
 }
 

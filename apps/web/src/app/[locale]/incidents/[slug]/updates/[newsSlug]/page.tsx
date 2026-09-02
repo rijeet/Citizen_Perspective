@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect as nextRedirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { Link, redirect } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import NewsItemDescription from '@/components/governance/NewsItemDescription';
 import SourcePlatformIcon from '@/components/governance/SourcePlatformIcon';
 import { getNewsItem } from '@/lib/api';
 import { formatPublishDate } from '@/lib/format-date';
 import { metaDescriptionFromHtml } from '@/lib/meta-description';
+import { slugKeysMatch, decodeSlugSegment } from '@/lib/slug-match';
 
 type Props = {
   params: Promise<{ locale: string; slug: string; newsSlug: string }>;
@@ -77,11 +78,11 @@ export default async function NewsItemDetailPage({ params }: Props) {
 
   if (!item) notFound();
 
-  if (item.slug !== newsSlug) {
-    redirect({
-      href: `/incidents/${slug}/updates/${item.slug}`,
-      locale,
-    });
+  if (!slugKeysMatch(newsSlug, item.slug)) {
+    const canonicalSlug = decodeSlugSegment(item.slug);
+    nextRedirect(
+      `/${locale}/incidents/${decodeSlugSegment(slug)}/updates/${canonicalSlug}`,
+    );
   }
 
   const canonicalPath = canonicalNewsPath(locale, slug, item.slug);
