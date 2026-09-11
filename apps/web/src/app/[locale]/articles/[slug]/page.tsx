@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
+import ArticleBody, { articleHasRenderableBody } from '@/components/ArticleBody';
 import ArticleCard from '@/components/ArticleCard';
-import MarkdownBody from '@/components/MarkdownBody';
-import HtmlBody from '@/components/HtmlBody';
 import { getArticle, getArticles } from '@/lib/api';
 import { formatPublishDate } from '@/lib/format-date';
 import { slugifyHeading } from '@/lib/slug-heading';
@@ -59,12 +58,15 @@ export default async function ArticlePage({ params }: Props) {
   const tHome = await getTranslations('home');
 
   const article = await getArticle(slug, locale);
-  const hasBody =
-    article &&
-    (article.contentType === 'HTML'
-      ? Boolean(article.bodyHtml)
-      : Boolean(article.bodyMd));
-  if (!article || !hasBody) {
+  if (
+    !article ||
+    !articleHasRenderableBody(
+      article.contentType ?? 'MARKDOWN',
+      article.bodyMd,
+      article.bodyHtml,
+      article.description,
+    )
+  ) {
     notFound();
   }
 
@@ -151,12 +153,13 @@ export default async function ArticlePage({ params }: Props) {
             )}
           </div>
         </header>
-        <div className="mt-8 max-w-[720px]">
-          {article.contentType === 'HTML' && article.bodyHtml ? (
-            <HtmlBody html={article.bodyHtml} />
-          ) : article.bodyMd ? (
-            <MarkdownBody markdown={article.bodyMd} />
-          ) : null}
+        <div className="mt-8 w-full min-w-0">
+          <ArticleBody
+            contentType={article.contentType ?? 'MARKDOWN'}
+            bodyMd={article.bodyMd}
+            bodyHtml={article.bodyHtml}
+            description={article.description}
+          />
         </div>
       </article>
       <aside className="space-y-10 lg:col-span-4">
