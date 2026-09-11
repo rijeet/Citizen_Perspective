@@ -5,8 +5,6 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { adminFetch, readApiError } from '@/lib/admin-api';
 
-type SourceOpt = { id: string; name: string };
-
 type Trans = {
   locale: 'bn' | 'en';
   title: string;
@@ -43,9 +41,8 @@ export default function ArticleForm({
 }: Props) {
   const t = useTranslations('admin');
   const router = useRouter();
-  const [sources, setSources] = useState<SourceOpt[]>([]);
   const [slug, setSlug] = useState('');
-  const [sourceId, setSourceId] = useState('');
+  const [sourceUrl, setSourceUrl] = useState('');
   const [category, setCategory] = useState(defaultCategory ?? '');
   const [tagsInput, setTagsInput] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
@@ -74,22 +71,6 @@ export default function ArticleForm({
   );
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const res = await adminFetch('admin/sources');
-      if (!res.ok || cancelled) return;
-      const data = (await res.json()) as {
-        id: string;
-        name: string;
-      }[];
-      if (!cancelled) setSources(data);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
     if (mode !== 'edit' || !editSlug) return;
     let cancelled = false;
     (async () => {
@@ -105,7 +86,7 @@ export default function ArticleForm({
       }
       const a = (await res.json()) as {
         slug: string;
-        sourceId: string;
+        source: { url: string | null };
         category: string | null;
         tags: string[];
         coverUrl: string | null;
@@ -123,7 +104,7 @@ export default function ArticleForm({
         }[];
       };
       setSlug(a.slug);
-      setSourceId(a.sourceId);
+      setSourceUrl(a.source?.url ?? '');
       setCategory(a.category ?? '');
       setContentType(a.contentType === 'HTML' ? 'HTML' : 'MARKDOWN');
       setTagsInput(a.tags?.length ? a.tags.join(', ') : '');
@@ -206,7 +187,7 @@ export default function ArticleForm({
         method: 'POST',
         body: JSON.stringify({
           slug,
-          sourceId,
+          sourceUrl: sourceUrl.trim(),
           category: category || undefined,
           coverUrl: coverUrl || undefined,
           publishedAt: publishedAt
@@ -224,7 +205,7 @@ export default function ArticleForm({
         {
           method: 'PATCH',
           body: JSON.stringify({
-            sourceId,
+            sourceUrl: sourceUrl.trim(),
             category: category ? category : null,
             coverUrl: coverUrl ? coverUrl : null,
             publishedAt: publishedAt
@@ -347,20 +328,15 @@ export default function ArticleForm({
           />
         </label>
         <label className="block text-sm sm:col-span-2">
-          <span className="text-archive-muted">{t('source')}</span>
-          <select
+          <span className="text-archive-muted">{t('sourceUrl')}</span>
+          <input
+            type="url"
             className="mt-1 w-full rounded-md border border-archive-border bg-white px-3 py-2"
-            value={sourceId}
-            onChange={(e) => setSourceId(e.target.value)}
+            value={sourceUrl}
+            onChange={(e) => setSourceUrl(e.target.value)}
+            placeholder="https://"
             required
-          >
-            <option value="">—</option>
-            {sources.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+          />
         </label>
         <label className="block text-sm">
           <span className="text-archive-muted">{t('category')}</span>

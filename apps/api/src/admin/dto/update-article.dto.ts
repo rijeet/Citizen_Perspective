@@ -24,6 +24,14 @@ export class UpdateArticleDto {
   @IsString()
   sourceId?: string;
 
+  @ApiPropertyOptional({
+    description: 'Article source URL (creates or reuses Source by URL)',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  sourceUrl?: string;
+
   @ApiPropertyOptional({ description: 'ISO date string, or null to clear' })
   @IsOptional()
   @ValidateIf((_, v) => v !== null && v !== undefined)

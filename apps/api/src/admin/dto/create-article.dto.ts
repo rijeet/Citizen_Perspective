@@ -18,9 +18,19 @@ export class CreateArticleDto {
   @MinLength(1)
   slug: string;
 
-  @ApiProperty({ description: 'Existing Source id' })
+  @ApiPropertyOptional({ description: 'Existing Source id' })
+  @IsOptional()
   @IsString()
-  sourceId: string;
+  sourceId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Article source URL (creates or reuses Source by URL)',
+    example: 'https://example.com/story',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  sourceUrl?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

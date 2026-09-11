@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ArticleContentType, Locale, ReviewStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { resolveSourceId } from './resolve-source.util';
 import type { AdminArticleListQueryDto } from './dto/admin-article-list-query.dto';
 import type { CreateArticleDto } from './dto/create-article.dto';
 import type { UpdateArticleDto } from './dto/update-article.dto';
@@ -49,17 +50,12 @@ export class AdminArticlesService {
       throw new ConflictException('Slug already in use');
     }
 
-    const source = await this.prisma.source.findUnique({
-      where: { id: dto.sourceId },
-    });
-    if (!source) {
-      throw new NotFoundException('Source not found');
-    }
+    const sourceId = await resolveSourceId(this.prisma, dto);
 
     return this.prisma.article.create({
       data: {
         slug: dto.slug,
-        sourceId: dto.sourceId,
+        sourceId,
         publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : null,
         coverUrl: dto.coverUrl ?? null,
         category: dto.category ?? null,
@@ -106,13 +102,9 @@ export class AdminArticlesService {
       }
     }
 
-    if (dto.sourceId) {
-      const source = await this.prisma.source.findUnique({
-        where: { id: dto.sourceId },
-      });
-      if (!source) {
-        throw new NotFoundException('Source not found');
-      }
+    let sourceId: string | undefined;
+    if (dto.sourceId !== undefined || dto.sourceUrl !== undefined) {
+      sourceId = await resolveSourceId(this.prisma, dto);
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -120,7 +112,7 @@ export class AdminArticlesService {
         where: { id: article.id },
         data: {
           ...(dto.slug !== undefined && { slug: dto.slug }),
-          ...(dto.sourceId !== undefined && { sourceId: dto.sourceId }),
+          ...(sourceId !== undefined && { sourceId }),
           ...(dto.publishedAt !== undefined && {
             publishedAt:
               dto.publishedAt === null ? null : new Date(dto.publishedAt),

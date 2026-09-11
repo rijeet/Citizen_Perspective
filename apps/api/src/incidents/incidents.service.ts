@@ -13,6 +13,7 @@ import {
   type RequestLocale,
 } from '../governance/governance-locale.util';
 import type { IncidentListQueryDto } from './dto/incident-list-query.dto';
+import { newsItemOrderDesc } from './news-item-order';
 import { resolveNewsItemDescriptionContentType } from './news-item-description.util';
 
 type NewsItemRow = {
@@ -103,7 +104,7 @@ export class IncidentsService {
         translations: true,
         category: { include: { translations: true } },
         subcategory: { include: { translations: true } },
-        newsItems: { orderBy: { createdAt: 'desc' }, take: 1 },
+        newsItems: { orderBy: newsItemOrderDesc, take: 1 },
       },
     });
 
@@ -117,7 +118,7 @@ export class IncidentsService {
         translations: true,
         category: { include: { translations: true } },
         subcategory: { include: { translations: true } },
-        newsItems: { orderBy: { createdAt: 'asc' } },
+        newsItems: { orderBy: newsItemOrderDesc },
       },
     });
     if (!incident) throw new NotFoundException('Incident not found');
@@ -252,6 +253,10 @@ export class IncidentsService {
     locale: RequestLocale,
   ) {
     const latest = inc.newsItems[0];
+    const latestAt = latest?.publishedAt ?? latest?.createdAt ?? null;
+    const updatedAt =
+      latestAt && latestAt > inc.updatedAt ? latestAt : inc.updatedAt;
+
     return {
       id: inc.id,
       slug: inc.slug,
@@ -268,7 +273,7 @@ export class IncidentsService {
         : null,
       currentStage: inc.currentStage,
       currentStatus: inc.currentStatus,
-      updatedAt: inc.updatedAt.toISOString(),
+      updatedAt: updatedAt.toISOString(),
       latestNewsItem: latest ? mapNewsItem(latest, locale) : null,
     };
   }
@@ -299,9 +304,7 @@ export class IncidentsService {
       ...this.toListView(inc, locale),
       createdAt: inc.createdAt.toISOString(),
       newsItems,
-      latestNewsItemId: newsItems.length
-        ? newsItems[newsItems.length - 1].id
-        : null,
+      latestNewsItemId: newsItems[0]?.id ?? null,
     };
   }
 }

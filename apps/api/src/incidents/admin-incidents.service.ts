@@ -11,6 +11,7 @@ import type { CreateNewsItemDto } from './dto/create-news-item.dto';
 import type { IncidentListQueryDto } from './dto/incident-list-query.dto';
 import type { UpdateIncidentDto } from './dto/update-incident.dto';
 import { resolveNewsItemDescriptionContentType } from './news-item-description.util';
+import { newsItemOrderDesc } from './news-item-order';
 import { uniqueNewsItemSlug } from '../common/slug.util';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class AdminIncidentsService {
         translations: true,
         category: { include: { translations: true } },
         subcategory: { include: { translations: true } },
-        newsItems: { orderBy: { createdAt: 'desc' }, take: 1 },
+        newsItems: { orderBy: newsItemOrderDesc, take: 1 },
         _count: { select: { newsItems: true } },
       },
     });
@@ -43,7 +44,7 @@ export class AdminIncidentsService {
         translations: true,
         category: { include: { translations: true } },
         subcategory: { include: { translations: true } },
-        newsItems: { orderBy: { createdAt: 'asc' } },
+        newsItems: { orderBy: newsItemOrderDesc },
       },
     });
     if (!incident) throw new NotFoundException('Incident not found');
@@ -154,7 +155,7 @@ export class AdminIncidentsService {
           translations: true,
           category: { include: { translations: true } },
           subcategory: { include: { translations: true } },
-          newsItems: { orderBy: { createdAt: 'asc' } },
+          newsItems: { orderBy: newsItemOrderDesc },
         },
       });
     });
@@ -208,11 +209,14 @@ export class AdminIncidentsService {
         },
       });
 
+      const publishedAt = dto.publishedAt ? new Date(dto.publishedAt) : new Date();
+
       await tx.incident.update({
         where: { id: incidentId },
         data: {
           currentStage: dto.stage,
           currentStatus: dto.status ?? null,
+          updatedAt: publishedAt,
         },
       });
 
@@ -231,7 +235,7 @@ export class AdminIncidentsService {
 
       const latest = await tx.newsItem.findFirst({
         where: { incidentId },
-        orderBy: { createdAt: 'desc' },
+        orderBy: newsItemOrderDesc,
       });
 
       await tx.incident.update({
@@ -239,6 +243,7 @@ export class AdminIncidentsService {
         data: {
           currentStage: latest?.stage ?? '',
           currentStatus: latest?.status ?? null,
+          updatedAt: latest?.publishedAt ?? latest?.createdAt ?? new Date(),
         },
       });
     });
