@@ -6,6 +6,7 @@ import {
   CategoryCountGrid,
   FeaturedBannerStrip,
   IncidentCard,
+  LashKoiTrackerSection,
 } from '@/components/governance';
 import {
   getArticles,
@@ -14,6 +15,10 @@ import {
   getIncidents,
   getTimelineEvents,
 } from '@/lib/api';
+import {
+  getLashKoiTracker,
+  isLashKoiTrackerEnabled,
+} from '@/lib/lashkoi-api';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -26,13 +31,16 @@ export default async function Home({ params, searchParams }: Props) {
   const t = await getTranslations('home');
   const tGov = await getTranslations('governance');
 
-  const [banners, categories, incidents, list, timelineEvents] =
+  const [banners, categories, incidents, list, timelineEvents, lashkoiBundle] =
     await Promise.all([
       getFeaturedBanners(locale),
       getCategories(locale),
       getIncidents(locale, { category }),
       getArticles(locale),
       getTimelineEvents(locale),
+      isLashKoiTrackerEnabled()
+        ? getLashKoiTracker(locale, { category, limit: 6 })
+        : Promise.resolve(null),
     ]);
 
   const articles = list?.data ?? [];
@@ -100,6 +108,24 @@ export default async function Home({ params, searchParams }: Props) {
           )}
         </div>
       </section>
+
+      {lashkoiBundle ? (
+        <LashKoiTrackerSection
+          bundle={lashkoiBundle}
+          locale={locale}
+          activeCategory={category}
+          labels={{
+            sectionLabel: tGov('lashkoiSectionLabel'),
+            sectionTitle: tGov('lashkoiSectionTitle'),
+            intro: tGov('lashkoiIntro'),
+            categories: tGov('categories'),
+            incidentFeed: tGov('incidentFeed'),
+            noIncidents: tGov('noIncidents'),
+            openMap: tGov('lashkoiOpenMap'),
+            poweredBy: tGov('lashkoiPoweredBy'),
+          }}
+        />
+      ) : null}
 
       <section
         aria-labelledby="archive-section-heading"

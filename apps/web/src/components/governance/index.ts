@@ -4,3 +4,4 @@ export { default as GovInvestigationCard } from './GovInvestigationCard';
 export { default as IncidentCard } from './IncidentCard';
 export { default as NewsItemTimeline } from './NewsItemTimeline';
 export { default as SourcePlatformIcon } from './SourcePlatformIcon';
+export { default as LashKoiTrackerSection } from './LashKoiTrackerSection';
